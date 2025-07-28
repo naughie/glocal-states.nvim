@@ -64,17 +64,6 @@ state.set("some value", buf_id)
 assert(state.get(buf_id) == "some value")
 ```
 
-```lua
-local state = mkstate.win()
-
-local current_win_id = 0
-state.set(1, current_win_id)
-assert(state.get() == nil)
-
-local state = mkstate.win()
-state.set(1)
-assert(state.get(current_win_id) == nil)
-```
 
 ### Local states
 
