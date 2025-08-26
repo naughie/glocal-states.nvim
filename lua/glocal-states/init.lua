@@ -66,7 +66,7 @@ M.tab = function()
         state.values[t] = nil
     end
 
-    state.clear_if = function(scope_id, filter)
+    state.clear_if = function(filter, scope_id)
         local t = scope_id_or_current.tab(scope_id)
         local inscope = state.values[t]
         if inscope and inscope.value and filter(inscope.value) then
@@ -110,7 +110,7 @@ M.win = function()
         state.values[t] = nil
     end
 
-    state.clear_if = function(scope_id, filter)
+    state.clear_if = function(filter, scope_id)
         local t = scope_id_or_current.tab(scope_id)
         local inscope = state.values[t]
         if inscope and inscope.value and filter(inscope.value) then
@@ -154,7 +154,7 @@ M.buf = function()
         state.values[t] = nil
     end
 
-    state.clear_if = function(scope_id, filter)
+    state.clear_if = function(filter, scope_id)
         local t = scope_id_or_current.tab(scope_id)
         local inscope = state.values[t]
         if inscope and inscope.value and filter(inscope.value) then
