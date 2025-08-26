@@ -8,7 +8,9 @@ M.global = function()
     end
 
     state.set = function(value)
+        local prev_value = state.value
         state.value = value
+        return prev_value
     end
 
     return state
@@ -51,7 +53,9 @@ M.tab = function()
         local t = scope_id_or_current.tab(scope_id)
         local inscope = state.values[t]
         if inscope then
+            local prev_value = inscope.value
             inscope.value = value
+            return prev_value
         else
             state.values[t] = { value = value }
         end
@@ -85,7 +89,9 @@ M.win = function()
         local t = scope_id_or_current.win(scope_id)
         local inscope = state.values[t]
         if inscope then
+            local prev_value = inscope.value
             inscope.value = value
+            return prev_value
         else
             state.values[t] = { value = value }
         end
@@ -119,7 +125,9 @@ M.buf = function()
         local t = scope_id_or_current.buf(scope_id)
         local inscope = state.values[t]
         if inscope then
+            local prev_value = inscope.value
             inscope.value = value
+            return prev_value
         else
             state.values[t] = { value = value }
         end
