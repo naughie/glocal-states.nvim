@@ -78,6 +78,13 @@ M.tab = function()
         state.values = {}
     end
 
+    state.iter_mut = function(callback)
+        for scope_id, val in pairs(state.values) do
+            local new_val = callback(scope_id, val and val.value)
+            val.value = new_val
+        end
+    end
+
     table.insert(local_state_list.tab, state)
 
     return state
@@ -122,6 +129,13 @@ M.win = function()
         state.values = {}
     end
 
+    state.iter_mut = function(callback)
+        for scope_id, val in pairs(state.values) do
+            local new_val = callback(scope_id, val and val.value)
+            val.value = new_val
+        end
+    end
+
     table.insert(local_state_list.win, state)
 
     return state
@@ -164,6 +178,13 @@ M.buf = function()
 
     state.clear_all = function()
         state.values = {}
+    end
+
+    state.iter_mut = function(callback)
+        for scope_id, val in pairs(state.values) do
+            local new_val = callback(scope_id, val and val.value)
+            val.value = new_val
+        end
     end
 
     table.insert(local_state_list.buf, state)
