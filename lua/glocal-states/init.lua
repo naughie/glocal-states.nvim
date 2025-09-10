@@ -39,18 +39,18 @@ local scope_id_or_current = {
     end,
 }
 
-M.tab = function()
+local function metabuild_local(scope_id_or_current)
     local state = { values = {} }
 
     state.get = function(scope_id)
-        local t = scope_id_or_current.tab(scope_id)
+        local t = scope_id_or_current(scope_id)
         local inscope = state.values[t]
         if not inscope then return end
         return inscope.value
     end
 
     state.set = function(value, scope_id)
-        local t = scope_id_or_current.tab(scope_id)
+        local t = scope_id_or_current(scope_id)
         local inscope = state.values[t]
         if inscope then
             local prev_value = inscope.value
@@ -62,12 +62,12 @@ M.tab = function()
     end
 
     state.clear = function(scope_id)
-        local t = scope_id_or_current.tab(scope_id)
+        local t = scope_id_or_current(scope_id)
         state.values[t] = nil
     end
 
     state.clear_if = function(filter, scope_id)
-        local t = scope_id_or_current.tab(scope_id)
+        local t = scope_id_or_current(scope_id)
         local inscope = state.values[t]
         if inscope and inscope.value and filter(inscope.value) then
             state.values[t] = nil
@@ -78,6 +78,18 @@ M.tab = function()
         state.values = {}
     end
 
+    state.iter = function()
+        local iter_func, state, control_var = pairs(state.values)
+
+        return function()
+            local scope_id, new_val = iter_func(state, control_var)
+            control_var = scope_id
+
+            if scope_id == nil then return end
+            return scope_id, new_val.value
+        end
+    end
+
     state.iter_mut = function(callback)
         for scope_id, val in pairs(state.values) do
             local new_val = callback(scope_id, val and val.value)
@@ -85,108 +97,25 @@ M.tab = function()
         end
     end
 
+    return state
+end
+
+M.tab = function()
+    local state = metabuild_local(scope_id_or_current.tab)
     table.insert(local_state_list.tab, state)
 
     return state
 end
 
 M.win = function()
-    local state = { values = {} }
-
-    state.get = function(scope_id)
-        local t = scope_id_or_current.win(scope_id)
-        local inscope = state.values[t]
-        if not inscope then return end
-        return inscope.value
-    end
-
-    state.set = function(value, scope_id)
-        local t = scope_id_or_current.win(scope_id)
-        local inscope = state.values[t]
-        if inscope then
-            local prev_value = inscope.value
-            inscope.value = value
-            return prev_value
-        else
-            state.values[t] = { value = value }
-        end
-    end
-
-    state.clear = function(scope_id)
-        local t = scope_id_or_current.win(scope_id)
-        state.values[t] = nil
-    end
-
-    state.clear_if = function(filter, scope_id)
-        local t = scope_id_or_current.win(scope_id)
-        local inscope = state.values[t]
-        if inscope and inscope.value and filter(inscope.value) then
-            state.values[t] = nil
-        end
-    end
-
-    state.clear_all = function()
-        state.values = {}
-    end
-
-    state.iter_mut = function(callback)
-        for scope_id, val in pairs(state.values) do
-            local new_val = callback(scope_id, val and val.value)
-            val.value = new_val
-        end
-    end
-
+    local state = metabuild_local(scope_id_or_current.win)
     table.insert(local_state_list.win, state)
 
     return state
 end
 
 M.buf = function()
-    local state = { values = {} }
-
-    state.get = function(scope_id)
-        local t = scope_id_or_current.buf(scope_id)
-        local inscope = state.values[t]
-        if not inscope then return end
-        return inscope.value
-    end
-
-    state.set = function(value, scope_id)
-        local t = scope_id_or_current.buf(scope_id)
-        local inscope = state.values[t]
-        if inscope then
-            local prev_value = inscope.value
-            inscope.value = value
-            return prev_value
-        else
-            state.values[t] = { value = value }
-        end
-    end
-
-    state.clear = function(scope_id)
-        local t = scope_id_or_current.buf(scope_id)
-        state.values[t] = nil
-    end
-
-    state.clear_if = function(filter, scope_id)
-        local t = scope_id_or_current.buf(scope_id)
-        local inscope = state.values[t]
-        if inscope and inscope.value and filter(inscope.value) then
-            state.values[t] = nil
-        end
-    end
-
-    state.clear_all = function()
-        state.values = {}
-    end
-
-    state.iter_mut = function(callback)
-        for scope_id, val in pairs(state.values) do
-            local new_val = callback(scope_id, val and val.value)
-            val.value = new_val
-        end
-    end
-
+    local state = metabuild_local(scope_id_or_current.buf)
     table.insert(local_state_list.buf, state)
 
     return state
